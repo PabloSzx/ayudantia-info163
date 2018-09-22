@@ -1,0 +1,73 @@
+
+Program prog;
+
+Var 
+  j, num: integer;
+
+  monitor monitortenedor;
+  export
+  obtenertenedor,
+  dejartenedor;
+
+Var 
+  tenedor: array [0..4] Of integer;
+  okparacomer: array [0..4] Of condition;
+  i: integer;
+
+Procedure obtenertenedor(i: integer);
+Begin
+  If tenedor[i] <> 2 Then
+    Begin
+      writeln('Filosofo ',i+1,' esta esperando');
+      delay(okparacomer[i])
+    End;
+
+  tenedor[(i+1) mod 5] := tenedor[(i+1) Mod 5] - 1;
+  tenedor[(i+4) mod 5] := tenedor[(i+4) Mod 5] - 1;
+  writeln('Filosofo ',i+1,' come');
+End;
+
+Procedure dejartenedor(i: integer);
+Begin
+  writeln('Filosofo ',i+1,' termina');
+  tenedor[(i+1) mod 5] := tenedor[(i+1) Mod 5] + 1;
+  tenedor[(i+4) mod 5] := tenedor[(i+4) Mod 5] + 1;
+  If tenedor[(i+1) Mod 5] = 2 Then
+    resume(okparacomer[(i+1) mod 5]);
+  If tenedor[(i+4) Mod 5] = 2 Then
+    resume(okparacomer[(i+4) mod 5])
+End;
+
+Begin
+  For i := 0 To 4 Do
+    Begin
+      tenedor[i] := 2
+    End;
+End;
+
+Procedure come(n: integer);
+Begin
+  monitortenedor.obtenertenedor(n);
+  sleep(random(10));
+  monitortenedor.dejartenedor(n)
+End;
+
+process
+
+Type tipofil(n: integer);
+Begin
+  Repeat
+    come(n)
+  Until random(10) = 1;
+End;
+
+Var 
+  filosofo: array[0..4] Of tipofil;
+
+Begin
+  Randomize;
+  cobegin
+  For num := 0 To 4 Do
+    filosofo[num](num)
+    coend
+End.

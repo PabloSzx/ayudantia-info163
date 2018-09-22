@@ -1,0 +1,27 @@
+
+Program repaso3;
+
+process
+
+Type proceso(id: integer);
+
+Var j: integer;
+Begin
+
+  Repeat
+    j := Random(15);
+    writeln('Proceso ', id, ' con valor: ', j);
+    sleep(Random(50));
+  Until (j = 1);
+End;
+
+Var procesos: array[1..10] Of proceso;
+
+Var i: integer;
+Begin
+  Randomize;
+  cobegin
+  For i := 1 To 10 Do
+    procesos[i](i);
+  coend
+End.

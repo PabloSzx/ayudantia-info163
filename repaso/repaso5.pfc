@@ -1,0 +1,44 @@
+
+Program repaso5;
+
+monitor monitorPrint;
+export startPrint, endPrint;
+
+Var esperando: array[1..10] Of condition;
+  n: integer;
+Procedure startPrint;
+Begin
+  If (n > 0) Then
+    delay(esperando[n]);
+  n := n + 1;
+End;
+Procedure endPrint;
+Begin
+  resume(esperando[n]);
+  n := n - 1;
+End;
+Begin
+  n := 0;
+End;
+
+process
+
+Type proceso(id: integer);
+Begin
+  Repeat
+    monitorPrint.startPrint;
+    writeln('Esto ', 'sin ', 'monitor ',
+            'estaria ', 'todo ', 'separado: ', id);
+    monitorPrint.endPrint;
+  Until (Random(100) = 1);
+End;
+
+Var procesos: array[1..10] Of proceso;
+  i: integer;
+Begin
+  Randomize;
+  cobegin
+  For i := 1 To 10 Do
+    procesos[i](i);
+  coend;
+End.

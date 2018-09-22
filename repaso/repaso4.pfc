@@ -1,0 +1,49 @@
+
+Program repaso4;
+
+Var i: integer;
+
+Var semaforo, mutex: semaphore;
+
+process
+
+Type proceso1(id: integer);
+Begin
+  Repeat
+    writeln('Mutex esperando: ', id);
+    wait(mutex);
+    writeln('Mutex ejecutando: ', id);
+    sleep(Random(100) + 50);
+    signal(mutex);
+  Until (Random(50) = 1);
+End;
+
+process
+
+Type proceso2(id: integer);
+Begin
+  Repeat
+    writeln('Proceso 2 esperando: ', id);
+    wait(semaforo);
+    writeln('Proceso 2 ejecutando: ', id);
+    sleep(Random(100) + 50);
+    If (Random(10) < 8) Then
+      signal(semaforo);
+    forever;
+  End;
+
+  Var procesos1: array[1..10] Of proceso1;
+
+  Var procesos2: array[1..10] Of proceso2;
+
+  Begin
+    initial(semaforo, 5);
+    initial(mutex, 0);
+    cobegin
+    For i := 1 To 10 Do
+      Begin
+        procesos1[i](i);
+        procesos2[i](i);
+      End;
+    coend;
+  End.

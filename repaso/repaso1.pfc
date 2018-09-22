@@ -1,0 +1,22 @@
+
+Program repaso1;
+
+Procedure pasoPorValor(i: integer);
+Begin
+  i := i + 1;
+End;
+Procedure pasoPorReferencia(Var i: integer);
+Begin
+  i := i + 1;
+End;
+
+Var i: integer;
+
+Begin
+  i := 2;
+  writeln(i);
+  pasoPorReferencia(i);
+  writeln(i);
+  pasoPorValor(i);
+  writeln(i);
+End.

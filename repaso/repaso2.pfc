@@ -1,0 +1,13 @@
+
+Program repaso2;
+
+Begin
+  Randomize;
+
+  Repeat
+    writeln('1');
+    sleep(Random(100));
+    writeln('2');
+  Until (Random(100) = 1);
+    (* forever *)
+End.

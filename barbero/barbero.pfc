@@ -1,0 +1,49 @@
+
+Program barbero;
+
+Var 
+  hayBarbero: semaphore;
+  hayCliente: semaphore;
+  afeitado: semaphore;
+  i: integer;
+  process
+
+Type Barbero;
+Begin
+  Repeat
+    signal(hayBarbero);
+    writeln('el barbero espera un cliente');
+    wait(hayCliente);
+    writeln('el barbero comenzo a atender un cliente');
+    sleep(random(100));
+    signal(afeitado);
+    writeln('el barbero termino de atender un cliente');
+  Until random(1000) = 1;
+End;
+process
+
+Type Cliente;
+Begin
+  sleep(random(500));
+  signal(hayCliente);
+  writeln('llego una persona y espera al barbero');
+  wait(hayBarbero);
+  wait(afeitado);
+  writeln('un cliente se fue contento de la barberia');
+End;
+
+Var barberos: array[1..1] Of Barbero;
+
+Var clientes: array[1..10] Of Cliente;
+Begin
+  initial(afeitado, 0);
+  initial(hayBarbero,0);
+  initial(hayCliente,0);
+  cobegin
+  barberos[1];
+  For i:=1 To 10 Do
+    Begin
+      clientes[i];
+    End
+    coend;
+End.
