@@ -29,21 +29,21 @@ Begin
     sleep(Random(100) + 50);
     If (Random(10) < 8) Then
       signal(semaforo);
-    forever;
-  End;
+  forever;
+End;
 
-  Var procesos1: array[1..10] Of proceso1;
+Var procesos1: array[1..10] Of proceso1;
 
-  Var procesos2: array[1..10] Of proceso2;
+Var procesos2: array[1..10] Of proceso2;
 
-  Begin
-    initial(semaforo, 5);
-    initial(mutex, 0);
-    cobegin
-    For i := 1 To 10 Do
-      Begin
-        procesos1[i](i);
-        procesos2[i](i);
-      End;
-    coend;
-  End.
+Begin
+  initial(semaforo, 5);
+  initial(mutex, 0);
+  cobegin
+  For i := 1 To 10 Do
+    Begin
+      procesos1[i](i);
+      procesos2[i](i);
+    End;
+  coend;
+End.
