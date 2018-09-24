@@ -1,0 +1,9 @@
+(segundomasrapido + masrapido + maslento + segundomasrapido) vs (maslento + masrapido + masrapido + segundomaslento) 
+
+=>
+
+(2*segundomasrapido + masrapido + maslento) < (2*masrapido + segundomaslento + maslento)
+
+<=>
+
+(2*segundomasrapido) < (masrapido + segundomaslento)

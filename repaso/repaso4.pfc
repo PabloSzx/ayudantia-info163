@@ -38,7 +38,7 @@ Var procesos2: array[1..10] Of proceso2;
 
 Begin
   initial(semaforo, 5);
-  initial(mutex, 0);
+  initial(mutex, 1);
   cobegin
   For i := 1 To 10 Do
     Begin

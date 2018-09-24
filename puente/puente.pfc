@@ -1,0 +1,128 @@
+
+Program puente;
+
+Const n = 10;
+
+Var i, tiempo, nIzquierda,
+  nDerecha, posicionLinterna:   integer;
+
+Procedure printPuente;
+Begin
+  writeln('⌛ ', tiempo);
+  writeln;
+  If posicionLinterna = 0 Then
+    Write('/|\');
+  For i := 1 To nIzquierda Do
+    write('(•◡•)');
+  write('===========');
+  For i := 1 To nDerecha Do
+    write('(•◡•)');
+  If posicionLinterna = 1 Then
+    write('/|\');
+  writeln;
+End;
+
+
+monitor monitorPuente;
+export pasar;
+
+Var 
+  velocidad:   integer;
+
+  esperandoPareja:   condition;
+Procedure pasar(Var pos: integer; vel: integer; id: integer);
+Begin
+  If pos = 0 Then
+    Begin
+      If posicionLinterna = 0 Then
+        Begin
+          velocidad := vel;
+          posicionLinterna := -1;
+          delay(esperandoPareja);
+          tiempo := tiempo + velocidad;
+          pos := 1;
+          posicionLinterna := 1;
+          nDerecha := nDerecha + 1;
+          nIzquierda := nIzquierda - 1;
+          writeln('                                                                      Persona '
+                  , id
+                  , ' agarro la linterna con velocidad ', vel,
+                  ' y paso a la derecha');
+          printPuente;
+        End;
+      If posicionLinterna = -1 Then
+        Begin
+          If velocidad < vel Then
+            velocidad := vel;
+          pos := 1;
+          nDerecha := nDerecha + 1;
+          nIzquierda := nIzquierda - 1;
+          writeln(
+                  '                                                                      Persona '
+                  , id
+                  , ' con velocidad ', vel, ' paso a la derecha'
+          );
+          resume(esperandoPareja);
+        End;
+    End;
+  If (pos = 1) And (nDerecha <> n) Then
+    Begin
+      If posicionLinterna = 1 Then
+        Begin
+          pos := 0;
+          posicionLinterna := 0;
+          tiempo := tiempo + vel;
+          nDerecha := nDerecha - 1;
+          nIzquierda := nIzquierda + 1;
+          writeln(
+                  '                                                                      Persona '
+                  , id
+                  , ' con velocidad ', vel,
+                  ' paso a la izquierda con la linterna para ayudar');
+          printPuente;
+        End;
+    End;
+
+End;
+
+
+Begin
+
+End;
+
+
+process
+
+Type persona(i: integer);
+
+Var posicion, vel:   integer;
+Begin
+  vel := Random(10) + 1;
+  posicion := 0;
+  Repeat
+    monitorPuente.pasar(posicion, vel, i);
+  Until (nDerecha = n);
+
+  If i = n Then
+    Begin
+      writeln;
+      writeln;
+      writeln('El puente se cruzo con tiempo final ', tiempo);
+    End;
+End;
+
+Var personas:   array[1..n] Of persona;
+
+
+Begin
+  Randomize;
+  tiempo := 0;
+  nIzquierda := n;
+  nDerecha := 0;
+  posicionLinterna := 0;
+  printPuente;
+  cobegin
+  For i := 1 To n Do
+    personas[i](i);
+  coend
+End.
