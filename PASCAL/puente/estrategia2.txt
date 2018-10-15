@@ -1,0 +1,16 @@
+n => cantidad de personas del grupo entero
+nIzquierda => cantidad de personas que no han cruzado
+nDerecha => cantidad de personas que han cruzado
+posicionLinterna => posicion linterna
+
+n entero = 10
+nizquierda = n
+nderecba = 0
+posicionLinterna = 0 izquierda, 1 derecha, -1 si esta en la mano de alguien
+
+PERSONA
+posicion => izquierda 0 o derecha 1
+
+condition: esperandoPareja
+si estoy a la izquierda => esperandoPareja (delay(esperandoPareja)) o ser la pareja de alguien (si estoy a la izquierda, y la posicion de la linterna es -1)
+is estoy a la derecha => quiero ayudar a los que no han cruzado
