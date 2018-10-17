@@ -1,3 +1,3 @@
 all:
-	mkdir bin -p
-	cd bin && gnatmake ../$(a) && ./$(a)
+	mkdir bin/sol -p
+	cd bin && gnatmake ../$(a) -o $(a) && ./$(a)
