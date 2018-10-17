@@ -9,14 +9,16 @@ use Ada.Integer_Text_IO;
 use Ada.Float_Text_IO;
 use Ada.Calendar;
 
-procedure matriz_estatica is
+procedure matriz_dinamica_2 is
+
+n: Integer := 10;
 
 subtype rangeRandom is Integer range 1 .. 10;
 package Random_Gen is new Ada.Numerics.Discrete_Random(rangeRandom);
 use Random_Gen;
 G: Generator;
 
-type Matriz is array(1 .. 3,1 .. 3) of Integer;
+type Matriz is array(1 .. n,1 .. n) of Integer;
 
 matrizA : Matriz;
 matrizB : Matriz;
@@ -25,24 +27,31 @@ matrizR : Matriz;
 time1: Time;
 time2: Time;
 
-task fila1;
-task fila2;
-task fila3;
+
+task monitor is
+    entry genMatriz(i: in Character);
+    entry complete(i: in Integer);
+end monitor;
+
+task type multiplicaFila(id: Integer) is 
+    entry complete;
+end multiplicaFila;
+type multiplicaFilaAccess is access multiplicaFila;
+P: array(1 .. n) of multiplicaFilaAccess;
+
+task type multiplicaColumna(id: Integer; I: Integer);
+type multiplicaColumnaAccess is access multiplicaColumna;
+Q: multiplicaColumnaAccess;
+
 
 task genMatrizA;
 task genMatrizB;
 
-task monitor is
-    entry genMatriz(i: in Character);
-    entry ready(i: in Integer);
-    entry complete(i: in Integer);
-end monitor;
-
 task body genMatrizA is
 begin
     Random_Gen.Reset(G);
-    for I in 1 .. 3 loop
-        for J in 1 .. 3 loop
+    for I in 1 .. n loop
+        for J in 1 .. n loop
             matrizA(I, J) := Random(G);
         end loop;
     end loop;
@@ -52,51 +61,39 @@ end genMatrizA;
 task body genMatrizB is
 begin
     Random_Gen.Reset(G);
-    for I in 1 .. 3 loop
-        for J in 1 .. 3 loop
+    for I in 1 .. n loop
+        for J in 1 .. n loop
             matrizB(I, J) := Random(G);
         end loop;
     end loop;
     monitor.genMatriz('B');
 end genMatrizB;
 
-task body fila1 is
+task body multiplicaFila is
+count: Integer := 0;
 begin
-    monitor.ready(1);
-    for I in 1 .. 3 loop
-        matrizR(1, I) := 0;
-        for J in 1 .. 3 loop
-            matrizR(1, I) := matrizR(1, I) + (matrizA(1, J) * matrizB(J, I));
-        end loop;
+    Put_Line("Fila" & Integer'Image(id) & " liberada");
+    for I in 1 .. n loop
+        Q := new multiplicaColumna(id, I);
     end loop;
-    monitor.complete(1);
-end fila1;
 
-task body fila2 is
+    loop
+        accept complete do
+            count := count + 1;
+        end complete;
+        exit when count = n;
+    end loop;
+    monitor.complete(id);
+end multiplicaFila;
+
+task body multiplicaColumna is
 begin
-    monitor.ready(2);
-    for I in 1 .. 3 loop
-        matrizR(2, I) := 0;
-        for J in 1 .. 3 loop
-            matrizR(2, I) := matrizR(2, I) + (matrizA(2, J) * matrizB(J, I));
-        end loop;
+    matrizR(id, I) := 0;
+    for J in 1 .. n loop
+        matrizR(id, I) := matrizR(id, I) + (matrizA(id, J) * matrizB(J, I));
     end loop;
-    monitor.complete(2);
-end fila2;
-
-
-task body fila3 is
-sum: Integer;
-begin
-    monitor.ready(3);
-    for I in 1 .. 3 loop
-        matrizR(3, I) := 0;
-        for J in 1 .. 3 loop
-            matrizR(3, I) := matrizR(3, I) + (matrizA(3, J) * matrizB(J, I));
-        end loop;
-    end loop;
-    monitor.complete(3);
-end fila3;
+    P(id).complete;
+end multiplicaColumna;
 
 task body monitor is
 count: Integer := 0;
@@ -114,15 +111,11 @@ begin
     end loop;
 
     Put_Line("");
-    Put_Line("Paso 2: Liberar tasks de multiplicacion");
+    Put_Line("Paso 2: Lanzar Tasks de Multiplicacion");
     Put_Line("");
 
-    loop
-        accept ready(i: in Integer) do
-            count := count + 1;
-            Put_Line("Fila" & Integer'Image(i) & " liberada");
-        end ready;
-        exit when count = 5;
+    for I in 1 .. n loop
+        P(I) := new multiplicaFila(I);
     end loop;
 
     Put_Line("");
@@ -135,7 +128,7 @@ begin
             count := count + 1;
             Put_Line("Fila" & Integer'Image(i) & " completada");
         end complete;
-        exit when count = 8;
+        exit when count = n + 2;
     end loop;
     time2 := Clock;
 
@@ -144,8 +137,8 @@ begin
     Put_Line("");
     Put_Line("Matriz A:");
 
-    For I in 1 .. 3 loop
-        For J in 1 .. 3 loop
+    For I in 1 .. n loop
+        For J in 1 .. n loop
             Put(MatrizA(I, J));
         end loop;
         Put_Line("");
@@ -154,8 +147,8 @@ begin
     Put_Line("");
     Put_Line("Matriz B:");
 
-    For I in 1 .. 3 loop
-        For J in 1 .. 3 loop
+    For I in 1 .. n loop
+        For J in 1 .. n loop
             Put(MatrizB(I, J));
         end loop;
         Put_Line("");
@@ -164,18 +157,17 @@ begin
     Put_Line("");
     Put_Line("Matriz R:");
 
-    For I in 1 .. 3 loop
-        For J in 1 .. 3 loop
+    For I in 1 .. n loop
+        For J in 1 .. n loop
             Put(MatrizR(I, J));
         end loop;
         Put_Line("");
     end loop;
-
+    
     Put_Line("");
     Put_Line("Tiempo de ejecucion: " & Duration'Image(time2 - time1) & " segundos");
 end monitor;
 
-
 begin
-null;
-end matriz_estatica;
+    null;
+end matriz_dinamica_2;

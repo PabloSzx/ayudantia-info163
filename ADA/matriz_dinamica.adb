@@ -2,10 +2,12 @@ with Ada.Text_IO;
 with Ada.Integer_Text_IO;
 with Ada.Float_Text_IO;
 with Ada.Numerics.Discrete_Random;
-with Ada.Real_Time;
+with Ada.Calendar;
+
 use Ada.Text_IO;
 use Ada.Integer_Text_IO;
 use Ada.Float_Text_IO;
+use Ada.Calendar;
 
 procedure matriz_dinamica is
 
@@ -22,6 +24,8 @@ matrizA : Matriz;
 matrizB : Matriz;
 matrizR : Matriz;
 
+time1: Time;
+time2: Time;
 
 task monitor is
     entry genMatriz(i: in Character);
@@ -77,12 +81,10 @@ begin
     Put_Line("");
 
     loop
-        select 
-            accept genMatriz(i: in Character) do
-                count := count + 1;
-                Put_Line("Matriz " & i & " Generada");
-            end genMatriz;
-        end select;
+        accept genMatriz(i: in Character) do
+            count := count + 1;
+            Put_Line("Matriz " & i & " Generada");
+        end genMatriz;
         exit when count = 2;
     end loop;
 
@@ -98,6 +100,7 @@ begin
     Put_Line("Paso 3: Recibir task de multiplicaciones completadas");
     Put_Line("");
 
+    time1 := Clock;
     loop
         accept complete(i: in Integer) do
             count := count + 1;
@@ -105,6 +108,7 @@ begin
         end complete;
         exit when count = n + 2;
     end loop;
+    time2 := Clock;
 
     Put_Line("");
     Put_Line("Paso 4: Imprimir resultados");
@@ -138,6 +142,8 @@ begin
         Put_Line("");
     end loop;
 
+    Put_Line("");
+    Put_Line("Tiempo de ejecucion: " & Duration'Image(time2 - time1) & " segundos");
 end monitor;
 
 begin
