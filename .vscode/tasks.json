@@ -1,0 +1,22 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "openmp compile and run",
+            "type": "shell",
+            "command": "clear && mkdir -p C/bin && g++ -std=c++14 -fopenmp -O2 ${relativeFile} -o C/bin/${fileBasenameNoExtension}.o && C/bin/${fileBasenameNoExtension}.o",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "openmp run",
+            "type": "shell",
+            "command": "C/bin/${fileBasenameNoExtension}.o",
+            "group": "build",
+            "problemMatcher": []
+        }
+
+    ]
+}
