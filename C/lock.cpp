@@ -2,12 +2,12 @@
 #include <bits/stdc++.h>
 #include <unistd.h>
 
-omp_lock_t C;
+
 
 int main() {
-
-     int count;
-
+     omp_lock_t C;
+     
+     
      omp_init_lock(&C);
      omp_set_lock(&C);
 
@@ -22,6 +22,7 @@ int main() {
                     omp_unset_lock(&C);   
                }
           }
+
           auto i = omp_get_thread_num();
           printf("Hilo %d esperando\n", i); 
           omp_set_lock(&C); 

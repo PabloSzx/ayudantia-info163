@@ -11,12 +11,13 @@ int main() {
     //omp_set_num_threads(20); 
     #pragma omp parallel
     {
+        // 0 / 8
         auto i = omp_get_thread_num();
         printf("Hilo %d llamado\n", i);
         #pragma omp task 
         {
             printf("NRAND: %d, desde el hilo: %d, %d\n", rand() % 100, i, omp_get_thread_num());
-            usleep(rand()%10000000);
+            sleep(rand()%10);
             printf("Hilo %d terminado\n",i);
         }
         printf("Fuera del task desde el hilo:  %d\n", i);
